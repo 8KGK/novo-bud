@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>Карта Новобудов</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
+    <link rel="stylesheet" href="css/styles.css">
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+</head>
+<body>
+    <div id="map"></div>
+
+    <div class="info-banner" id="infoBanner">
+        📍 Клікайте на карті, щоб позначити кути території ЖК<br>
+        <span class="point-counter" id="pointCounter">Точок: 0 (мінімум 3)</span>
+    </div>
+
+    <div class="legend">
+        <h4>Статус будівництва</h4>
+        <div class="legend-item">
+            <div class="legend-color" style="background: rgba(52, 152, 219, 0.6);"></div>
+            <span>Готовий</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background: rgba(241, 196, 15, 0.6);"></div>
+            <span>Будується</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background: rgba(46, 204, 113, 0.6);"></div>
+            <span>Планується</span>
+        </div>
+    </div>
+
+    <div class="toolbar" id="toolbar">
+        <button onclick="UI.startAddingComplex()">➕ Додати ЖК</button>
+        <button onclick="UI.toggleDeleteMode()" class="secondary" id="deleteBtn">🗑️ Видалити ЖК</button>
+        <button onclick="Storage.exportData()" class="secondary">💾 Експорт</button>
+        <button onclick="document.getElementById('importFile').click()" class="secondary">📥 Імпорт</button>
+        <button onclick="Storage.syncData()" class="secondary sync-btn">🔄 Синхронізація</button>
+    </div>
+    
+    <input type="file" id="importFile" accept=".json" style="display: none;" onchange="Storage.importData(event)">
+
+    <div class="toolbar" id="addingToolbar" style="display: none;">
+        <button onclick="UI.finishDrawing()" class="finish" id="finishBtn" disabled>✅ Завершити (мін. 3 точки)</button>
+        <button onclick="UI.undoLastPoint()" class="secondary">↩️ Відмінити точку</button>
+        <button onclick="UI.cancelAdding()" class="btn-cancel">❌ Скасувати</button>
+    </div>
+
+    <div class="modal" id="addModal">
+        <div class="modal-content">
+            <h3>Додати новий ЖК</h3>
+            <label>Назва ЖК</label>
+            <input type="text" id="complexName" placeholder="наприклад: ЖК Злагода">
+            
+            <label>Ціна</label>
+            <input type="text" id="complexPrice" placeholder="від 5.5 млн грн">
+            
+            <label>Статус</label>
+            <select id="complexStatus">
+                <option value="ready">Готовий</option>
+                <option value="building" selected>Будується</option>
+                <option value="planned">Планується</option>
+            </select>
+            
+            <label>Опис</label>
+            <textarea id="complexDescription" rows="2" placeholder="Короткий опис ЖК"></textarea>
+            
+            <label>Поверховість</label>
+            <input type="text" id="complexFloors" placeholder="25 поверхів">
+            
+            <label>Забудовник</label>
+            <input type="text" id="complexDeveloper" placeholder="Назва компанії">
+            
+            <div id="coordinatesInfo" style="margin: 10px 0; color: #27ae60; font-size: 12px;"></div>
+            
+            <div class="modal-buttons">
+                <button class="btn-save" onclick="UI.saveComplex()">Зберегти</button>
+                <button class="btn-cancel" onclick="UI.cancelAdding()">Скасувати</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="sync-status" id="syncStatus"></div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/storage.js"></script>
+    <script src="js/map.js"></script>
+    <script src="js/ui.js"></script>
+</body>
+</html>
