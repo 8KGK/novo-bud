@@ -46,62 +46,64 @@ const MapController = {
     },
     
     // Відображення ЖК на карті
-    renderComplexes() {
-        // Видаляємо старі полігони
-        Object.values(this.polygonObjects).forEach(obj => {
-            this.map.removeLayer(obj.polygon);
-            if (obj.marker) this.map.removeLayer(obj.marker);
-        });
-        this.polygonObjects = {};
+renderComplexes() {
+    // Видаляємо старі полігони
+    Object.values(this.polygonObjects).forEach(obj => {
+        this.map.removeLayer(obj.polygon);
+        if (obj.marker) this.map.removeLayer(obj.marker);
+    });
+    this.polygonObjects = {};
+    
+    // Малюємо нові
+    window.residentialComplexes.forEach((complex, index) => {
+        // Створюємо popup контент один раз для полігону
+        const popupContent = `
+            <div class="popup-content">
+                <h3>${complex.name}</h3>
+                <p><strong>Опис:</strong> ${complex.description}</p>
+                <p><strong>Поверховість:</strong> ${complex.floors}</p>
+                <p><strong>Забудовник:</strong> ${complex.developer}</p>
+                <p class="price">${complex.price}</p>
+            </div>
+        `;
         
-        // Малюємо нові
-        window.residentialComplexes.forEach((complex, index) => {
-            const polygon = L.polygon(complex.coordinates, {
-                color: CONFIG.STATUS_BORDERS[complex.status],
-                fillColor: CONFIG.STATUS_COLORS[complex.status],
-                fillOpacity: 0.5,
-                weight: 3,
-                className: this.isDeleteMode ? 'deletable-polygon' : ''
-            }).addTo(this.map);
-            
-            const popupContent = `
-                <div class="popup-content">
-                    <h3>${complex.name}</h3>
-                    <p><strong>Опис:</strong> ${complex.description}</p>
-                    <p><strong>Поверховість:</strong> ${complex.floors}</p>
-                    <p><strong>Забудовник:</strong> ${complex.developer}</p>
-                    <p class="price">${complex.price}</p>
-                    <button onclick="MapController.showDetails('${complex.name}')">Детальніше</button>
-                </div>
-            `;
-            
-            if (!this.isDeleteMode) {
-                polygon.bindPopup(popupContent, {
-                    maxWidth: 300,
-                    closeButton: true
-                });
-            } else {
-                polygon.on('click', () => {
-                    if (confirm(`Видалити "${complex.name}"?`)) {
-                        this.deleteComplex(index);
-                    }
-                });
-            }
-            
-            // Додаємо мітку з назвою
-            const center = polygon.getBounds().getCenter();
-            const marker = L.marker(center, {
-                icon: L.divIcon({
-                    className: 'custom-marker',
-                    html: `<div style="background: white; padding: 4px 8px; border-radius: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.3); font-size: 11px; font-weight: bold; white-space: nowrap;">${complex.name}</div>`,
-                    iconSize: [100, 30],
-                    iconAnchor: [50, 15]
-                })
-            }).addTo(this.map);
-            
-            this.polygonObjects[index] = { polygon, marker };
-        });
-    },
+        const polygon = L.polygon(complex.coordinates, {
+            color: CONFIG.STATUS_BORDERS[complex.status],
+            fillColor: CONFIG.STATUS_COLORS[complex.status],
+            fillOpacity: 0.5,
+            weight: 3,
+            className: this.isDeleteMode ? 'deletable-polygon' : ''
+        }).addTo(this.map);
+        
+        // Створюємо табличку з назвою - завжди видима
+        const center = polygon.getBounds().getCenter();
+        const marker = L.marker(center, {
+            icon: L.divIcon({
+                className: 'custom-marker-label',
+                html: `<div>${complex.name}</div>`,
+                iconSize: [100, 20],
+                iconAnchor: [50, 10]
+            }),
+            zIndexOffset: 1000,
+            interactive: false
+        }).addTo(this.map);
+        
+        if (!this.isDeleteMode) {
+            polygon.bindPopup(popupContent, {
+                maxWidth: 300,
+                closeButton: true
+            });
+        } else {
+            polygon.on('click', () => {
+                if (confirm(`Видалити "${complex.name}"?`)) {
+                    this.deleteComplex(index);
+                }
+            });
+        }
+        
+        this.polygonObjects[index] = { polygon, marker };
+    });
+},
     
     // Видалення ЖК
     deleteComplex(index) {
