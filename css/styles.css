@@ -272,6 +272,73 @@ body {
     filter: brightness(0.7) !important;
 }
 
+/* Стилі для міток - приховуємо при великому зумі */
+.custom-marker {
+    transition: opacity 0.3s;
+    pointer-events: none;
+    white-space: nowrap;
+    text-shadow: 
+        -1px -1px 0 rgba(255,255,255,0.8),
+        1px -1px 0 rgba(255,255,255,0.8),
+        -1px 1px 0 rgba(255,255,255,0.8),
+        1px 1px 0 rgba(255,255,255,0.8);
+}
+
+.custom-marker div {
+    background: rgba(255, 255, 255, 0.95) !important;
+    padding: 3px 6px !important;
+    border-radius: 3px !important;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.4) !important;
+    font-size: 10px !important;
+    font-weight: bold !important;
+    white-space: nowrap !important;
+    border: 1px solid rgba(0,0,0,0.1);
+}
+
+@media (max-width: 768px) {
+    .custom-marker div {
+        font-size: 9px !important;
+        padding: 2px 5px !important;
+    }
+}
+
+/* Кластеризація міток на низькому зумі */
+.marker-cluster {
+    background: rgba(255, 255, 255, 0.95);
+    border: 2px solid #3498db;
+    border-radius: 20px;
+    padding: 5px 10px;
+    font-weight: bold;
+    font-size: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+
+/* Стилі для полігонів - збільшуємо прозорість при наведенні */
+.leaflet-interactive {
+    cursor: pointer;
+}
+
+.leaflet-interactive:hover {
+    fill-opacity: 0.7 !important;
+    stroke-width: 4 !important;
+}
+
+/* Стилі для tooltip */
+.custom-tooltip {
+    background: rgba(44, 62, 80, 0.95);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 5px 10px;
+    font-size: 12px;
+    font-weight: bold;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+}
+
+.custom-tooltip::before {
+    display: none;
+}
+
 .temp-polygon {
     stroke: #e74c3c;
     stroke-width: 3;

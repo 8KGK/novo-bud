@@ -43,6 +43,11 @@ const MapController = {
             px.y -= e.popup._container.clientHeight / 2;
             this.map.panTo(this.map.unproject(px), {animate: true});
         });
+        
+        // Обробник зміни зуму - перемальовуємо мітки
+        this.map.on('zoomend', () => {
+            this.renderComplexes();
+        });
     },
     
     // Відображення ЖК на карті
@@ -54,6 +59,10 @@ const MapController = {
         });
         this.polygonObjects = {};
         
+        // Отримуємо поточний зум
+        const currentZoom = this.map.getZoom();
+        const showLabels = currentZoom >= 15; // Збільшили поріг до 15
+        
         // Малюємо нові
         window.residentialComplexes.forEach((complex, index) => {
             const polygon = L.polygon(complex.coordinates, {
@@ -64,6 +73,16 @@ const MapController = {
                 className: this.isDeleteMode ? 'deletable-polygon' : ''
             }).addTo(this.map);
             
+            // Додаємо tooltip при наведенні (замість міток)
+            if (!this.isDeleteMode) {
+                polygon.bindTooltip(complex.name, {
+                    permanent: false,
+                    direction: 'center',
+                    className: 'custom-tooltip',
+                    opacity: 0.9
+                });
+            }
+            
             const popupContent = `
                 <div class="popup-content">
                     <h3>${complex.name}</h3>
@@ -71,7 +90,6 @@ const MapController = {
                     <p><strong>Поверховість:</strong> ${complex.floors}</p>
                     <p><strong>Забудовник:</strong> ${complex.developer}</p>
                     <p class="price">${complex.price}</p>
-                    <button onclick="MapController.showDetails('${complex.name}')">Детальніше</button>
                 </div>
             `;
             
@@ -88,16 +106,22 @@ const MapController = {
                 });
             }
             
-            // Додаємо мітку з назвою
-            const center = polygon.getBounds().getCenter();
-            const marker = L.marker(center, {
-                icon: L.divIcon({
-                    className: 'custom-marker',
-                    html: `<div style="background: white; padding: 4px 8px; border-radius: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.3); font-size: 11px; font-weight: bold; white-space: nowrap;">${complex.name}</div>`,
-                    iconSize: [100, 30],
-                    iconAnchor: [50, 15]
-                })
-            }).addTo(this.map);
+            // Додаємо мітку з назвою тільки при ДУЖЕ великому зумі
+            let marker = null;
+            if (showLabels) {
+                const center = polygon.getBounds().getCenter();
+                // Скорочуємо назву якщо вона довга
+                const shortName = complex.name.length > 20 ? complex.name.substring(0, 17) + '...' : complex.name;
+                
+                marker = L.marker(center, {
+                    icon: L.divIcon({
+                        className: 'custom-marker',
+                        html: `<div>${shortName}</div>`,
+                        iconSize: [null, null],
+                        iconAnchor: [0, 0]
+                    })
+                }).addTo(this.map);
+            }
             
             this.polygonObjects[index] = { polygon, marker };
         });

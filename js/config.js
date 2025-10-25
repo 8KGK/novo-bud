@@ -65,13 +65,15 @@ const CONFIG = {
     STATUS_COLORS: {
         ready: 'rgba(52, 152, 219, 0.6)',
         building: 'rgba(241, 196, 15, 0.6)',
-        planned: 'rgba(46, 204, 113, 0.6)'
+        planned: 'rgba(46, 204, 113, 0.6)',
+        stopped: 'rgba(231, 76, 60, 0.6)'
     },
     
     STATUS_BORDERS: {
         ready: '#3498db',
         building: '#f39c12',
-        planned: '#2ecc71'
+        planned: '#2ecc71',
+        stopped: '#e74c3c'
     },
     
     // Налаштування карти
