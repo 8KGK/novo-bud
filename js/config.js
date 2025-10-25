@@ -1,8 +1,8 @@
 // Конфігурація додатку
 const CONFIG = {
     // API для збереження даних (можна використовувати jsonbin.io, firebase, або свій сервер)
-    API_URL: 'https://api.jsonbin.io/v3/b/YOUR_BIN_ID', // Замініть на свій BIN ID
-    API_KEY: '$2a$10$YOUR_API_KEY', // Замініть на свій API ключ
+    API_URL: 'https://api.jsonbin.io/v3/b/68fd03d2ae596e708f2c0319', // Замініть на свій BIN ID
+    API_KEY: '$2a$10$tVA52HUqKnWjRb5el9Kq8uw1BpKjCEUTi0THC5CiFzjBpe4CtLFKW', // Замініть на свій API ключ
     
     // Альтернативний варіант - GitHub API (для збереження у вашому репозиторії)
     GITHUB_API: {
